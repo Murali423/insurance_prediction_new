@@ -33,7 +33,13 @@ class DataIngestionConfig:
         except Exception as e:
             raise InsuranceException(e, sys)
 
-class DataValidationConfig:...
+class DataValidationConfig:
+    def __init__(self,training_pipeline_config:TrainingPipelineConfig):
+        self.data_validation_dir = os.path.join(training_pipeline_config,"data_validation")
+        self.report_file_path = os.path.join(self.data_validation_dir,"report.yaml")
+        self.missing_threshold:float = 0.2
+        self.base_file_path = os.path.join("insurance.csv")
+
 class DataTransformationConfig:...
 class ModelTrainerConfig:...
 class ModelEvaluationConfig:...
