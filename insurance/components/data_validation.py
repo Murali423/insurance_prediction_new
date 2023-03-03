@@ -1,12 +1,13 @@
 import os,sys
 from insurance.entity import config_entity,artifact_entity
-import numpy as numpy
+import numpy as np
 import pandas as pd 
 from insurance.exception import InsuranceException
 from insurance.logger import logging
 from insurance import utils
 from scipy.stats import ks_2samp
 from typing import Optional
+from insurance.config import TARGET_COLUMN
 
 
 class DataValidation:
@@ -35,11 +36,11 @@ class DataValidation:
             null_report = df.isnull().sum()/df.shape[0]
             logging.info(f'dropping the missing columns which are greaterthan {threshold}')
             drop_columns = null_report[null_report>threshold].index
-            logging.info("Columns to be dropped:{drop_columns}")
+            logging.info(f"Columns to be dropped:{drop_columns}")
             self.validation_error[report_key_name] = list(drop_columns)
             df.drop(list(drop_columns),inplace=True,axis = 1)
             # return None no columns left
-            if df.columns == 0:
+            if len(df.columns) == 0:
                 return None
             return df
         except Exception as e:
@@ -87,6 +88,7 @@ class DataValidation:
         try:
             base_columns = base_df.columns
             current_columns = current_df.columns
+            drift_report = dict()
 
             for base_column in base_columns:
                 base_data,current_data = base_df[base_column],current_df[base_column]
@@ -112,24 +114,47 @@ class DataValidation:
     def initiate_data_validataion(self)->artifact_entity.DataValidationArtifact:
         try:
             logging.info(f"Reading Base DataFrame")
-            base_df = pd.DataFrame(self.data_validation_config.base_file_path)
+            base_df = pd.read_csv(self.data_validation_config.base_file_path)
             logging.info(f"Drop null values colums from base df")
             base_df.replace({"na":np.NAN},inplace=True)
             base_df = self.drop_missing_value_columns(df = base_df, report_key_name = "missing_values_with_base_df" )
 
             logging.info(f"Reading the Train DataFrame")
-            train_df = pd.DataFrame(self.data_ingestion_artifact.train_file_path)
+            train_df = pd.read_csv(self.data_ingestion_artifact.train_file_path)
             logging.info("Dropping the missing columns")
             train_df.replace({"na":np.NAN},inplace = True)
             train_df = self.drop_missing_value_columns(df = train_df , report_key_name ="missing_values_with_train_df")
 
             logging.info(f'Reading the Test dataframe')
-            test_df = pd.DataFrame(self.data_ingestion_artifact.test_file_path)
+            test_df = pd.read_csv(self.data_ingestion_artifact.test_file_path)
             logging.info("Dropping the missing columns")
             test_df.replace({"na":np.NAN},inplace = True)
             test_df = self.drop_missing_value_columns(df = test_df, report_key_name = "missing_values_with_test_df")
 
+            exclude_columns = [TARGET_COLUMN]
+            base_df = utils.convet_columns_float(df = base_df, exclude_columns = exclude_columns)
+            train_df = utils.convet_columns_float(df = train_df, exclude_columns = exclude_columns)
+            test_df = utils.convet_columns_float(df = test_df, exclude_columns = exclude_columns)
+
+            logging.info(f"Is all required columns present in train df")
+            train_df_column_status = self.is_required_column_exist(base_df = base_df, current_df = train_df, report_key_name = "missing_columns_within_train_dataset")
+            logging.info(f"Is all required columns present in train df")
+            test_df_column_status = self.is_required_column_exist(base_df = base_df, current_df = test_df, report_key_name = "missing_columns_within_train_dataset")
+
+            if train_df_column_status:
+                logging.info(f"As all column are available in train df hence detecting data drift")
+                self.data_drift(base_df = base_df, current_df = train_df, report_key_name = "data_drift_within_train_dataset")
+            if test_df_column_status:
+                logging.info(f"As all column are available in test df hence detecting data drift")
+                self.data_drift(base_df = base_df, current_df = test_df, report_key_name = "data_drift_within_test_dataset")
             
+            #write report
+            logging.info('Write report in yaml file')
+            utils.write_yaml_file(file_path = self.data_validation_config.report_file_path, data = self.validation_error)
+
+            data_validation_artifact = artifact_entity.DataValidationArtifact(report_file_path = self.data_validation_config.report_file_path)
+            logging.info(f'Data validation artifact: {data_validation_artifact}')
+            return data_validation_artifact
 
 
         except Exception as e:

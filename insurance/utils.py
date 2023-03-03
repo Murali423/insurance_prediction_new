@@ -44,7 +44,7 @@ def write_yaml_file(file_path:str,data:dict):
     except Exception as e:
         raise InsuranceException( e, sys)
 
-def convet_columns_float(df:pd.DataFrame,exclude_columns:List)->pd.DataFrame:
+def convet_columns_float(df:pd.DataFrame,exclude_columns:list)->pd.DataFrame:
     try:
         for column in df.columns:
             if column not in exclude_columns:
