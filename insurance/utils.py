@@ -45,6 +45,13 @@ def write_yaml_file(file_path:str,data:dict):
         raise InsuranceException( e, sys)
 
 def convet_columns_float(df:pd.DataFrame,exclude_columns:list)->pd.DataFrame:
+    """
+    This fucnion  will convrt the columns to float
+    df : Dataframe to be converted
+    exclude_columns : List of collumns to be excluded
+    ========================================================
+    returns the Dataframe 
+    """
     try:
         for column in df.columns:
             if column not in exclude_columns:
@@ -53,3 +60,67 @@ def convet_columns_float(df:pd.DataFrame,exclude_columns:list)->pd.DataFrame:
         return df
     except Exception as e:
         raise InsuranceException(error_message = e, error_detail = sys)
+
+def save_object(file_path:str, obj:object) ->None:
+    """
+    This fucnion  will save the object using dill
+    file_path : path of file where yaml can store
+    object : object to be stored 
+    ========================================================
+    returns None
+    """
+    try:
+        logging.info("Entered the save_object method of utils")
+        os.makedirs(os.path.dirname(file_path),exist_ok = True)
+        with open(file_path,'wb') as file_obj:
+            dill.dump(obj,file_obj)
+        logging.info("Exited from the save_object method of utils")
+    except Exception as e:
+        raise InsuranceException(e, sys)
+
+def load_object(file_path:str)->object:
+    """
+    This fucnion  will load the object using dill
+    file_path : path of file where yaml can store
+    ========================================================
+    returns object
+    """
+    try:
+        if not os.path.exists(file_path):
+            raise Exception(f"The file: {file_path} is not exists")
+        with open(file_path,'rb') as file_obj:
+            return dill.load(file_obj)
+    except Exception as e:
+        raise InsuranceException(e, sys)
+
+def save_numpy_array_data(file_path:str,array:np.array)->None:
+    """
+    This fucnion  will save the array with numpy
+    file_path : path of file where yaml can store
+    array : Array to be stored in numpy
+    ========================================================
+    returns numpy object
+    """
+    try:
+        logging.info("Entered the save_numpy method of utils")
+        os.makedirs(os.path.dirname(file_path),exist_ok = True)
+        with open(file_path,'wb') as file_obj:
+            np.save(file_obj,array)
+        logging.info("Exited from the save_numpy method of utils")
+    except Exception as e:
+        raise InsuranceException(e, sys)
+
+def load_numpy_array_data(file_path:str)->np.array:
+    """
+    This fucnion  will load the numpy array using numpy
+    file_path : path of file where yaml can store
+    ========================================================
+    returns numpy array
+    """
+    try:
+        if not os.path.exists(file_path):
+            raise Exception(f"The file: {file_path} is not exists")
+        with open(file_path,'rb') as file_obj:
+            return np.load(file_obj)
+    except Exception as e:
+        raise InsuranceException(e, sys)
