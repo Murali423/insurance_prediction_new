@@ -124,3 +124,15 @@ def load_numpy_array_data(file_path:str)->np.array:
             return np.load(file_obj)
     except Exception as e:
         raise InsuranceException(e, sys)
+
+def adj_r2score(score,X,y):
+        '''
+        This function measure the adjusted r2 value
+        score : r2_score of the model
+        X : Independente features
+        y: Dependente feature
+        ================================================
+        Returns: adj_r2 value of the model
+        '''
+        adjR = 1 - ( 1-score ) * ( len(y) - 1 ) / ( len(y) - X.shape[1] - 1 )
+        return adjR
