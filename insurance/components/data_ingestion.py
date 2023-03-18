@@ -21,6 +21,7 @@ class DataIngestion:
                  collection_name = self.data_ingestion_config.collection_name)
 
             logging.info(f"Save data in feature store having the shape: {df.shape} ")
+            logging.info(f"Columns for the dataframe are : {df.columns} ")
 
             #Replace with Nan
             df.replace(to_replace="na",value=np.NAN,inplace=True)

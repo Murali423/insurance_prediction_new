@@ -61,6 +61,7 @@ class ModelEvaluation:
             y_true = target_df
 
             input_feature_name = list(transformer.feature_names_in_)
+            logging.info(f'input feature names: {input_feature_name}')
             for i in input_feature_name:
                 if test_df[i].dtype == 'O':
                     test_df[i] = target_encoder.fit_transform(test_df[i])
