@@ -1,12 +1,14 @@
 import pymongo
 import pandas as pd
 import json
+from insurance.config import mongo_client
+
 
 # Provide the mongodb localhost url to connect python to mongodb.
-mongo_client = pymongo.MongoClient("mongodb://localhost:27017/neurolabDB")
+#mongo_client = pymongo.MongoClient("mongodb://localhost:27017/neurolabDB")
 
 DATA_FILE_PATH = '/config/workspace/insurance.csv'
-DATABASE_NAME = "insurance"
+DATABASE_NAME = "insurance_1"
 COLLECTION_NAME = "insurance_prediction"
 
 
