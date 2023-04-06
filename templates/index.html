@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}">
+<script type="text/javascript" src="{{ url_for('static',filename='script/script.js') }}"></script>
+<h1>Insurance Premimum</h1>
+
+</head>
+<body>
+
+<form action="/submit" method='post' name="insurance">
+  <label for="Age">Age:</label><br>
+  <input type="text" id="age" name="age" value=""><br>
+  <label for="Gender"> Gender:</label> 
+  <input type="radio" id="gender" name="gender" value="male" checked="checked"/> Male  
+  <input type="radio" id="gender" name="gender" value="female"/> Female <br/>
+  <label for="BMI">BMI:</label><br>
+  <input type="text" id="bmi" name="bmi" value=""><br><br>
+  <label for="Childern ">Childern:</label><br>
+  <select name="Childern" id="Childern">
+    <option value="0">0</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+  </select>
+  <br><br>
+  <label for="Smoker">Smoker:</label>
+  <input type="radio" id="Smoker" name="Smoker" value="yes" /> yes
+  <input type="radio" id="Smokeer" name="Smoker" value="No" checked="checked"/> No <br/>
+  <label for="Region">Region:</label><br>
+  <select name="Region" id="Region">
+    <option value="southwest">southwest</option>
+    <option value="southeast">southeast</option>
+    <option value="northeast">northeast</option>
+    <option value="northwest">northwest</option>
+  </select>
+  <br><br>
+  <input type="submit" value="Submit">
+</form> 
+
+
+</body>
+</html>

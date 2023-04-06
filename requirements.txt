@@ -24,4 +24,5 @@ matplotlib
 seaborn
 scipy
 scikit-learn
+Flask == 2.2.3
 -e .
